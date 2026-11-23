@@ -1,0 +1,38 @@
+name: reframed-bug-tracker-bot
+services:
+  bot:
+    container_name: reframed-bug-tracker-bot
+    image: ${BOT_IMAGE:-ghcr.io/petzreframed/reframed-bug-tracker-bot:main}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 32
+    mem_limit: 128m
+    cpus: 0.5
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      REPORTS_DIR: /reports
+      STATE_DIR: /state
+    volumes:
+      # The game server's report folder on this host, read only: the bot never writes to it.
+      - type: bind
+        source: ${REPORTS_HOST_DIR:?Set REPORTS_HOST_DIR to the game server's report folder}
+        target: /reports
+        read_only: true
+        bind:
+          create_host_path: false
+      # Which reports were already posted.
+      - type: volume
+        source: state
+        target: /state
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: '3'
+volumes:
+  state:
