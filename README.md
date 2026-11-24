@@ -1,6 +1,6 @@
 # Reframed Bug Tracker Bot
 
-Posts the crash reports and bug reports of a [Petz 5 Reframed](https://github.com/PetzReframed/Petz5Reframed)
+Posts the crash reports and bug reports of a [Petz 5 Reframed](https://github.com/PetzReframed/Reframed)
 server to a Discord channel.
 
 The game server stores every report a player sends in a folder of its own. This bot reads that folder and posts each
