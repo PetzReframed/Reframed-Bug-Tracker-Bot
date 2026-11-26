@@ -1,8 +1,8 @@
 """The game server's report folder, read only.
 
-The server (Petz5Reframed, server/shared/crash_reports.py) stores each accepted report under a receipt name,
-<UTC time>-<code>-<24 hex digits>, where the code is RF-XXXXXXXX for a crash report and BUG-XXXXXXXX for a bug report
-a player wrote:
+The server (Reframed, server/shared/crash_reports.py) stores each accepted report under a receipt name,
+<UTC time>-<code>-<24 hex digits>, where the code is RF-XXXXXXXX for a crash report, BUG-XXXXXXXX for a bug report
+a player wrote and ERR-XXXXXXXX for the report of an error the game recovered from (the game went on):
 
 - a report without attachments is one file, <receipt>.log;
 - a report with attachments is a folder <receipt>/ holding <receipt>.log and, when sent, <receipt>.png (a screenshot)
@@ -18,8 +18,8 @@ import os
 from pathlib import Path
 import re
 
-RECEIPT = re.compile(r'(\d{8}T\d{6}\.\d{6}Z)-((RF|BUG)-[0-9A-F]{8})-[0-9a-f]{24}')
-KINDS = {'RF': 'Crash report', 'BUG': 'Bug report'}
+RECEIPT = re.compile(r'(\d{8}T\d{6}\.\d{6}Z)-((RF|BUG|ERR)-[0-9A-F]{8})-[0-9a-f]{24}')
+KINDS = {'RF': 'Crash report', 'BUG': 'Bug report', 'ERR': 'Recovered error report'}
 # The server's own ceiling for a report's text (PETZ_CRASH_REPORT_MAX_BYTES) plus its two closing lines.
 MAX_TEXT_BYTES = 262144 + 512
 

@@ -15,12 +15,13 @@ from bug_tracker_bot.tracker import load_posted, message_text, run_once
 ENV = {'DISCORD_BOT_TOKEN': 'token.for-tests', 'DISCORD_CHANNEL_ID': '123456789012345678'}
 CRASH = '20261123T101500.000001Z-RF-1A2B3C4D-0123456789abcdef01234567'
 BUG = '20261123T101600.000002Z-BUG-00C0FFEE-89abcdef0123456789abcdef'
+RECOVERED = '20261123T101700.000003Z-ERR-0BADF00D-456789abcdef0123456789ab'
+TITLES = {'RF': 'Petz 5 Reframed error report', 'BUG': 'Petz 5 Reframed bug report', 'ERR': 'Petz 5 Reframed recovered error report'}
 
 
 def text_of(receipt, body='Area: Family Room\nMessage: something failed'):
     code = receipt.split('Z-', 1)[1].rsplit('-', 1)[0]
-    title = 'Petz 5 Reframed bug report' if code.startswith('BUG') else 'Petz 5 Reframed error report'
-    return f'{title}\nCode: {code}\n{body}\n\nServer receipt: {receipt}\nServer build: 0123456789abcdef0123\n'
+    return f'{TITLES[code.split("-")[0]]}\nCode: {code}\n{body}\n\nServer receipt: {receipt}\nServer build: 0123456789abcdef0123\n'
 
 
 def store(folder, receipt, *, screenshot=None, saved=None, text=None):
@@ -80,6 +81,14 @@ class ReportTests(Folder):
         self.assertEqual((crash.code, crash.kind, crash.screenshot, crash.saved_data), ('RF-1A2B3C4D', 'Crash report', None, None))
         self.assertEqual(crash.received, datetime(2026, 11, 23, 10, 15, 0, 1, tzinfo=timezone.utc))
         self.assertEqual((bug.code, bug.kind, bug.screenshot.name, bug.saved_data), ('BUG-00C0FFEE', 'Bug report', BUG + '.png', None))
+
+    def test_a_recovered_error_report_is_read_and_posted_with_its_own_kind(self):
+        store(self.reports, RECOVERED, saved=b'zip')
+        self.assertEqual(receipts(self.reports), [RECOVERED])
+        report = read_report(self.reports, RECOVERED)
+        self.assertEqual((report.code, report.kind, report.screenshot, report.saved_data.name),
+                         ('ERR-0BADF00D', 'Recovered error report', None, RECOVERED + '.zip'))
+        self.assertTrue(message_text(report, []).startswith('**Recovered error report** `ERR-0BADF00D` received <t:'))
 
     def test_a_text_without_the_servers_closing_lines_is_not_a_report_yet(self):
         whole = text_of(CRASH)

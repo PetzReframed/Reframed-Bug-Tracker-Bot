@@ -1,11 +1,17 @@
 # Reframed Bug Tracker Bot
 
-Posts the crash reports and bug reports of a [Reframed](https://github.com/PetzReframed/Reframed)
-server to a Discord channel.
+Posts the crash reports, bug reports and recovered error reports of a
+[Reframed](https://github.com/PetzReframed/Reframed) server to a Discord channel.
 
 The game server stores every report a player sends in a folder of its own. This bot reads that folder and posts each
 new report once: what kind it is, its code, when the server received it, the start of its text, and the stored files
 (the full text, and the screenshot and saved-data ZIP when the player attached them).
+
+| Kind | Code | Sent from |
+| --- | --- | --- |
+| Crash report | `RF-…` | the window that opens when the game stops |
+| Bug report | `BUG-…` | Help > Report a Bug…, written by the player |
+| Recovered error report | `ERR-…` | the same window in its calm form, for an error the game recovered from and went on |
 
 It has no commands and listens to nothing: it only sends messages. It needs no change to the game server and opens no
 port. Reports stored while the bot was stopped are posted when it starts again.
